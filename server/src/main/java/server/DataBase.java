@@ -21,14 +21,16 @@ public class DataBase {
         return new ArrayList<>(users.values());
     }
 
-    public void addUser(String username, String password) {
+    public boolean addUser(String username, String password) {
         if (users.containsKey(username)) {
             System.out.println("Username already exists");
+            return false; // unsuccessful
         } else {
             String hashedPassword = hashPassword(password);
             User user = new User(username, hashedPassword);
             users.put(username, user);
             System.out.println("User added successfully");
+            return true; // successful
         }
     }
 

@@ -3,7 +3,7 @@ package shared.request;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import shared.response.Response;
-@JsonTypeName("loginRequest")
+@JsonTypeName("LoginRequest")
 public class LoginRequest implements Request{
 
     private String username;

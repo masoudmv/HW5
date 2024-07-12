@@ -1,0 +1,17 @@
+<component name="libraryTable">
+  <library name="10duke.client.jwt.jjwt" type="repository">
+    <properties maven-id="com.10duke.client.jwt:jjwt:1.1.0" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/10duke/client/jwt/jjwt/1.1.0/jjwt-1.1.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/10duke/client/jwt/api/1.1.0/api-1.1.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/io/jsonwebtoken/jjwt-api/0.10.7/jjwt-api-0.10.7.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/io/jsonwebtoken/jjwt-impl/0.10.7/jjwt-impl-0.10.7.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/io/jsonwebtoken/jjwt-jackson/0.10.7/jjwt-jackson-0.10.7.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-databind/2.9.9.3/jackson-databind-2.9.9.3.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-annotations/2.9.0/jackson-annotations-2.9.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-core/2.9.9/jackson-core-2.9.9.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -20,8 +20,8 @@ public class SocketRequestSender {
 
     public SocketRequestSender() throws IOException {
         this.socket = new Socket("127.0.0.1", 8080);
-        printStream = new PrintStream(socket.getOutputStream());
-        scanner = new Scanner(socket.getInputStream());
+        printStream = new PrintStream(socket.getOutputStream()); // used to send Request to server
+        scanner = new Scanner(socket.getInputStream()); // used to receive Response/Request? from server
         objectMapper = new ObjectMapper();
     }
 

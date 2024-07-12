@@ -21,7 +21,7 @@ public class SocketStarter extends Thread {
                 new ClientHandler(new SocketResponseSender(socket), dataBase).start();
             }
         } catch (Exception e) {
-            System.out.println('d');
+            System.out.println("oops! Something is wrong!");
         }
     }
 }

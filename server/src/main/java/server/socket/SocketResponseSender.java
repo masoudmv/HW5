@@ -18,8 +18,8 @@ public class SocketResponseSender {
 
     public SocketResponseSender(Socket socket) throws IOException {
         this.socket = socket;
-        printStream = new PrintStream(socket.getOutputStream());
-        scanner = new Scanner(socket.getInputStream());
+        printStream = new PrintStream(socket.getOutputStream()); // using outputStream server can send Request to client
+        scanner = new Scanner(socket.getInputStream()); // using InputStream server can receive Response from client
         objectMapper = new ObjectMapper();
     }
 

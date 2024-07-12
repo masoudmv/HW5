@@ -8,11 +8,14 @@ import shared.response.Response;
         use = JsonTypeInfo.Id.NAME,
         property = "subclassType"
 )
+
 @JsonSubTypes({
         @JsonSubTypes.Type(value = HiRequest.class, name = "hiRequest"),
-        @JsonSubTypes.Type(value = LoginRequest.class, name = "loginRequest"),
         @JsonSubTypes.Type(value = SignInRequest.class, name = "SignInRequest"),
+        @JsonSubTypes.Type(value = LoginRequest.class, name = "LoginRequest"),
+        @JsonSubTypes.Type(value = UploadRequest.class, name = "UploadRequest"),
 })
 public interface Request {
     Response run(RequestHandler requestHandler);
 }
+

@@ -1,10 +1,7 @@
 package client;
 
 import client.socket.SocketRequestSender;
-import shared.response.HiResponse;
-import shared.response.Response;
-import shared.response.ResponseHandler;
-import shared.response.SignInResponse;
+import shared.response.*;
 
 public class ServerHandler extends Thread implements ResponseHandler {
     SocketRequestSender socketRequestSender;
@@ -33,6 +30,13 @@ public class ServerHandler extends Thread implements ResponseHandler {
 
     @Override
     public void handleSignInResponse(SignInResponse signInResponse) {
+        if (signInResponse.isSuccessful()) System.out.println("Signed in successfully!");
+        if (!signInResponse.isSuccessful()) System.out.println("This username already exists!");
+    }
 
+    @Override
+    public void handleLogInResponse(LoginResponse loginResponse) {
+        if (loginResponse.isSuccessful()) System.out.println("Logged in successfully!");
+        if (!loginResponse.isSuccessful()) System.out.println("The username is not found!");
     }
 }
