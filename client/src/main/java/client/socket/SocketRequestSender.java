@@ -2,7 +2,10 @@ package client.socket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import shared.request.Request;
+import shared.response.HiResponse;
 import shared.response.Response;
+import shared.response.ResponseHandler;
+import shared.response.SignInResponse;
 
 import java.io.IOException;
 import java.io.PrintStream;

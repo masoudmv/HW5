@@ -1,20 +1,19 @@
 package shared.request;
 
-
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import shared.response.Response;
-@JsonTypeName("loginRequest")
-public class LoginRequest implements Request{
 
+@JsonTypeName("SignInRequest")
+public class SignInRequest implements Request{
     private String username;
     private String password;
 
-    public LoginRequest(String username, String password) {
+    public SignInRequest(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
-    public LoginRequest() {
+    public SignInRequest() {
     }
 
     public String getUsername() {
@@ -27,6 +26,6 @@ public class LoginRequest implements Request{
 
     @Override
     public Response run(RequestHandler requestHandler) {
-        return requestHandler.handleLoginRequest(this);
+        return requestHandler.handleSignInRequest(this);
     }
 }

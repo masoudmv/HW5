@@ -31,4 +31,12 @@ public class User extends Model {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public List<File> getFiles() {
+        return files;
+    }
+
+    public void addFile(File file){
+        this.files.add(file);
+    }
 }
