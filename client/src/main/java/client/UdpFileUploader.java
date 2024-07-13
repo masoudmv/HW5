@@ -1,4 +1,55 @@
-package client;
+package client;//package client;
+//
+//
+//import client.socket.SocketRequestSender;
+//import shared.request.HiRequest;
+//import shared.request.LoginRequest;
+//import shared.request.SignInRequest;
+//import shared.response.HiResponse;
+//import shared.response.Response;
+//import shared.response.ResponseHandler;
+//import shared.response.SignInResponse;
+//
+//import java.io.IOException;
+//import java.net.DatagramSocket;
+//import java.net.InetAddress;
+//import java.util.Arrays;
+//import java.util.List;
+//import java.util.Scanner;
+//
+//public class Main {
+//    public static void main(String[] args) throws IOException {
+////        SocketRequestSender socketRequestSender = new SocketRequestSender();
+////        ServerHandler serverHandler = new ServerHandler(socketRequestSender);
+////        socketRequestSender.sendRequest(new SignInRequest("a", "1")).run(serverHandler);
+////        socketRequestSender.sendRequest(new LoginRequest("a", "1")).run(serverHandler);
+////        Scanner scanner = new Scanner(System.in);
+////        scanner.nextLine();
+//
+//
+//
+//
+//
+//        DatagramSocket clientSocket = new DatagramSocket();
+//        InetAddress serverAddress = InetAddress.getByName("localhost");
+//
+//        // Example: Uploading multiple files
+//        List<String> filesToUpload = Arrays.asList("C:\\Users\\masoud\\Desktop\\NetworkClass\\client\\src\\file1.txt",
+//                "C:\\Users\\masoud\\Desktop\\NetworkClass\\client\\src\\file2.txt");
+//        for (String filePath : filesToUpload) {
+//            new Thread(new FileSender(clientSocket, serverAddress, filePath)).start();
+//        }
+//
+//    }
+//
+//
+//
+//}
+
+
+
+
+
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,13 +59,13 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 public class UdpFileUploader {
-    private static final int CHUNK_SIZE = 1024; // Size of each chunk
-    private static final int PORT = 9876; // Server port
+    private static final int CHUNK_SIZE = 10; // Size of each chunk
+    private static final int PORT = 8080; // Server port
 
     public static void main(String[] args) throws IOException {
-        File file = new File("path/to/your/file.txt");
+        File file = new File("C:\\Users\\masoud\\Desktop\\NetworkClass\\client\\src\\file1.txt");
         FileInputStream fis = new FileInputStream(file);
-        InetAddress serverAddress = InetAddress.getByName("localhost"); // "127.0.0.1" ???
+        InetAddress serverAddress = InetAddress.getByName("127.0.0.1");
         long fileSize = file.length();
         int totalChunks = (int) Math.ceil((double) fileSize / CHUNK_SIZE);
 

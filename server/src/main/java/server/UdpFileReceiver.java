@@ -1,4 +1,36 @@
-package server;
+package server;//package server;
+//
+//import server.socket.SocketStarter;
+//
+//import java.io.IOException;
+//import java.net.DatagramPacket;
+//import java.net.DatagramSocket;
+//
+//public class Main {
+//    public static void main(String[] args) throws IOException {
+////        SocketStarter socketStarter = new SocketStarter();
+////        socketStarter.start();
+//
+//
+//
+//
+//
+//
+//        DatagramSocket serverSocket = new DatagramSocket(8080);
+//        byte[] receiveData = new byte[1024];
+//
+//        while (true) {
+//            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+//            serverSocket.receive(receivePacket);
+//            new Thread(new FileReceiver(serverSocket, receivePacket)).start();
+//        }
+//    }
+//}
+
+
+
+
+
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -8,9 +40,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class UdpFileReceiver {
-    private static final int PORT = 9876; // Server port
-    private static final int CHUNK_SIZE = 1024; // Size of each chunk
-    private static final Map<Integer, byte[]> fileChunks = new ConcurrentHashMap<>(); // no ConcurrentHashMap
+    private static final int PORT = 8080; // Server port
+    private static final int CHUNK_SIZE = 10; // Size of each chunk
+    private static final Map<Integer, byte[]> fileChunks = new ConcurrentHashMap<>();
 
     public static void main(String[] args) throws IOException {
         DatagramSocket socket = new DatagramSocket(PORT);
@@ -46,7 +78,7 @@ public class UdpFileReceiver {
     }
 
     private static void reconstructFile() throws IOException {
-        try (FileOutputStream fos = new FileOutputStream("path/to/reconstructed/file.txt")) {
+        try (FileOutputStream fos = new FileOutputStream("C:\\Users\\masoud\\Desktop\\hello.txt")) {
             for (int i = 0; i < fileChunks.size(); i++) {
                 fos.write(fileChunks.get(i));
             }
