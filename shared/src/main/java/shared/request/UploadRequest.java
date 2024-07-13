@@ -1,34 +1,40 @@
 package shared.request;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import shared.response.Response;
+import java.io.Serializable;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.net.InetAddress;
+public class UploadRequest implements Serializable {
+    private static final long serialVersionUID = 1L; // ???
+    private String uniqueID;
+    private String fileName;
+    private int packetNumber;
+    private byte[] fileData;
+    private boolean isLastPacket;
 
-@JsonTypeName("UploadRequest")
-public class UploadRequest {
+    public UploadRequest(String uniqueID, String fileName, int packetNumber, byte[] fileData, boolean isLastPacket) {
+        this.uniqueID = uniqueID;
+        this.fileName = fileName;
+        this.packetNumber = packetNumber;
+        this.fileData = fileData;
+        this.isLastPacket = isLastPacket;
+    }
 
-    public UploadRequest() throws FileNotFoundException { // todo
+    public String getUniqueID() {
+        return uniqueID;
+    }
 
-//        File file = new File("path/to/your/file.txt");
-//        FileInputStream fis = new FileInputStream(file);
-//        InetAddress serverAddress = InetAddress.getByName("localhost");
-//        long fileSize = file.length();
-//        int totalChunks = (int) Math.ceil((double) fileSize / CHUNK_SIZE);
-//
-//        for (int i = 0; i < totalChunks; i++) {
-//            int chunkSize = (i == totalChunks - 1) ? (int) (fileSize - (i * CHUNK_SIZE)) : CHUNK_SIZE;
-//            byte[] buffer = new byte[chunkSize];
-//            fis.read(buffer, 0, chunkSize);
-//
-//            Thread thread = new Thread(new UdpSender(buffer, serverAddress, PORT, i));
-//            thread.start();
-//        }
-//
-//        fis.close();
+    public String getFileName() {
+        return fileName;
+    }
 
+    public int getPacketNumber() {
+        return packetNumber;
+    }
+
+    public byte[] getFileData() {
+        return fileData;
+    }
+
+    public boolean isLastPacket() {
+        return isLastPacket;
     }
 }

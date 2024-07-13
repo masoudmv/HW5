@@ -9,6 +9,8 @@ import shared.response.SignInResponse;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -17,6 +19,11 @@ public class SocketRequestSender {
     private final PrintStream printStream;
     private final Scanner scanner;
     private final ObjectMapper objectMapper;
+
+
+//    private final DatagramSocket socket;
+//    private final InetAddress serverAddress;
+//    private final int serverPort;
 
     public SocketRequestSender() throws IOException {
         this.socket = new Socket("127.0.0.1", 8080);

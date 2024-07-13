@@ -9,7 +9,5 @@ public class Main {
         SocketStarter socketStarter = new SocketStarter();
         socketStarter.start();
     }
-
-
 }
 
