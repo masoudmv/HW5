@@ -4,6 +4,7 @@ import shared.Model.User;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import javax.print.attribute.standard.RequestingUserName;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
@@ -12,12 +13,12 @@ import java.util.HashMap;
 import java.util.List;
 
 public class DataBase {
-    private HashMap<String, User> users;
+    private static HashMap<String, User> users;
 
     public DataBase() {
         users = new HashMap<>();
     }
-    public List<User> getUsers() {
+    public static List<User> getUsers() {
         return new ArrayList<>(users.values());
     }
 
@@ -32,6 +33,14 @@ public class DataBase {
             System.out.println("User added successfully");
             return true; // successful
         }
+    }
+
+
+    public static User findUser(String userName){
+        for (User user : getUsers()){
+            if (user.getUsername().equals(userName)) return user;
+        }
+        return null;
     }
 
 
@@ -58,4 +67,6 @@ public class DataBase {
         }
         return false;
     }
+
+
 }

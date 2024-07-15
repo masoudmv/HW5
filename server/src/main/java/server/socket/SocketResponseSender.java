@@ -27,17 +27,13 @@ public class SocketResponseSender {
         try {
             if (scanner.hasNextLine()) {
                 String s = scanner.nextLine();
-//                System.out.println("Read line: " + s);
-                Request request = objectMapper.readValue(s, Request.class);
-//                System.out.println("Deserialized Request: " + request);
-                return request;
+                return objectMapper.readValue(s, Request.class);
             } else {
-//                System.out.println("No line found");
+                System.out.println("No line found");
                 return null;
             }
         } catch (Exception e) {
-//            System.out.println("Exception occurred: " + e.getMessage());
-            e.printStackTrace(); // Print stack trace for more details
+            e.printStackTrace();
             return null;
         }
     }
@@ -47,6 +43,14 @@ public class SocketResponseSender {
             printStream.println(objectMapper.writeValueAsString(response));
         } catch (Exception e) {
             System.out.println("asd");
+        }
+    }
+
+    public void sendRequest(Request request) {
+        try {
+            printStream.println(objectMapper.writeValueAsString(request));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

@@ -1,8 +1,6 @@
 package shared;
 
-import shared.FileSenderThread;
 import shared.request.UploadRequest;
-
 import java.io.*;
 import java.net.*;
 import java.util.UUID;
@@ -56,8 +54,10 @@ public class FileUploadManager extends Thread {
             System.out.println("Sent end of file signal for: " + fileName);
 
             fis.close();
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             e.printStackTrace();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }

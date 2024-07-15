@@ -1,16 +1,20 @@
 package shared.Model;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class User extends Model {
     private String username;
     private String password;
-    private List<File> files;
+    private final List<File> files = new ArrayList<>();
+    private List<String> hasAccessTo;
+//    private List<File> accessedFilesForDownload;
 
     public User(String username, String password) {
         this.username = username;
         this.password = password;
+        hasAccessTo = new ArrayList<>();
     }
 
     public User() {
@@ -32,11 +36,26 @@ public class User extends Model {
         this.password = password;
     }
 
+    public List<String> getHasAccessTo() {
+        return hasAccessTo;
+    }
+
     public List<File> getFiles() {
         return files;
     }
 
+    public ArrayList<String> getFileStrings(){
+        ArrayList<String> fileNames = new ArrayList<>();
+        for (File file : files){
+            fileNames.add(file.getName());
+        }
+        return fileNames;
+    }
+
+
     public void addFile(File file){
         this.files.add(file);
+        this.hasAccessTo.add(file.getName());
     }
+
 }

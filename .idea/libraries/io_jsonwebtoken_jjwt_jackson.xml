@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="io.jsonwebtoken.jjwt.jackson" type="repository">
+    <properties maven-id="io.jsonwebtoken:jjwt-jackson:0.11.2" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/io/jsonwebtoken/jjwt-jackson/0.11.2/jjwt-jackson-0.11.2.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/io/jsonwebtoken/jjwt-api/0.11.2/jjwt-api-0.11.2.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-databind/2.9.10.4/jackson-databind-2.9.10.4.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-annotations/2.9.10/jackson-annotations-2.9.10.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-core/2.9.10/jackson-core-2.9.10.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

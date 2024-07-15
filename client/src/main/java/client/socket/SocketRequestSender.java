@@ -44,6 +44,30 @@ public class SocketRequestSender {
         }
     }
 
+    public Request getRequest() {
+        try {
+            if (scanner.hasNextLine()) {
+                String s = scanner.nextLine();
+                return objectMapper.readValue(s, Request.class);
+            } else {
+                System.out.println("No line found");
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // Method to send a response
+    public void sendResponse(Response response) {
+        try {
+            printStream.println(objectMapper.writeValueAsString(response));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void close() {
         try {
             scanner.close();

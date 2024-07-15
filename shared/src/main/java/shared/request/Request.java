@@ -10,10 +10,12 @@ import shared.response.Response;
 )
 
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = HiRequest.class, name = "hiRequest"),
+//        @JsonSubTypes.Type(value = HiRequest.class, name = "hiRequest"),
         @JsonSubTypes.Type(value = SignInRequest.class, name = "SignInRequest"),
         @JsonSubTypes.Type(value = LoginRequest.class, name = "LoginRequest"),
-        @JsonSubTypes.Type(value = UploadRequest.class, name = "UploadRequest"),
+        @JsonSubTypes.Type(value = GetUploadedFilesRequest.class, name = "GetUploadedFilesRequest"),
+        @JsonSubTypes.Type(value = AccessRequest.class, name = "AccessRequest"),
+        @JsonSubTypes.Type(value = GetDownloadableFilesRequest.class, name = "GetDownloadableFilesRequest"),
 })
 public interface Request {
     Response run(RequestHandler requestHandler);

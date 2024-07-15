@@ -1,7 +1,6 @@
 package shared;
 
 import shared.request.UploadRequest;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;

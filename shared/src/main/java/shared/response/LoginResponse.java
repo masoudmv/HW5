@@ -6,12 +6,24 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 public class LoginResponse implements Response{
 
     private boolean successful;
+    private String token;
+    private String userName;
 
-    public LoginResponse(boolean successful) {
+    public LoginResponse(boolean successful, String token, String userName) {
         this.successful = successful;
+        this.token = token;
+        this.userName = userName;
     }
 
     public LoginResponse() {
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public String getUserName() {
+        return userName;
     }
 
     public boolean isSuccessful() {
