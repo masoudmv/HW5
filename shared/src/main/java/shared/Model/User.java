@@ -9,7 +9,7 @@ public class User extends Model {
     private String password;
     private final List<File> files = new ArrayList<>();
     private List<String> hasAccessTo;
-//    private List<File> accessedFilesForDownload;
+
 
     public User(String username, String password) {
         this.username = username;

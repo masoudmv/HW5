@@ -16,10 +16,13 @@ public class Main {
         SocketRequestSender socketRequestSender = new SocketRequestSender();
         ServerHandler serverHandler = new ServerHandler(socketRequestSender);
 
+        new CLI(socketRequestSender, serverHandler);
+        CLI.showInitialOptions();
 
-        socketRequestSender.sendRequest(new SignInRequest("a", "1")).run(serverHandler);
-        socketRequestSender.sendRequest(new LoginRequest("a", "1")).run(serverHandler);
-        socketRequestSender.sendRequest(new GetDownloadableFilesRequest(token, "a", numClient)).run(serverHandler);
+
+//        socketRequestSender.sendRequest(new SignInRequest("a", "1")).run(serverHandler);
+//        socketRequestSender.sendRequest(new LoginRequest("a", "1")).run(serverHandler);
+//        socketRequestSender.sendRequest(new GetDownloadableFilesRequest(token, "a", numClient)).run(serverHandler);
 //        socketRequestSender.sendRequest(new GetDownloadableFilesRequest("a", "a")).run(serverHandler);
 //        socketRequestSender.sendRequest(new TCPUploadRequest("a", token, numClient)).run(serverHandler);
 
@@ -53,6 +56,8 @@ public class Main {
     public static void setNumClient(int numClient) {
         Main.numClient = numClient;
     }
+
+
 }
 
 

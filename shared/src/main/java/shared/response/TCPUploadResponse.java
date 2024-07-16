@@ -6,10 +6,12 @@ import java.net.UnknownHostException;
 
 @JsonTypeName("TCPUploadResponse")
 public class TCPUploadResponse implements Response{
+    String path;
     private boolean valid;
     private int port;
 
-    public TCPUploadResponse(boolean valid, int port) {
+    public TCPUploadResponse(String path, boolean valid, int port) {
+        this.path = path;
         this.valid = valid;
         this.port = port;
     }
@@ -27,6 +29,10 @@ public class TCPUploadResponse implements Response{
 
     public boolean isValid() {
         return valid;
+    }
+
+    public String getPath() {
+        return path;
     }
 
     @Override

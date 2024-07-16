@@ -1,12 +1,28 @@
 package client;
 
+import client.socket.SocketRequestSender;
+import shared.request.GetUploadedFilesRequest;
+import shared.request.LoginRequest;
+import shared.request.SignInRequest;
+import shared.request.TCPUploadRequest;
+import shared.response.ResponseHandler;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class CLI {
     private static Scanner scanner = new Scanner(System.in);
+    private static SocketRequestSender socketRequestSender;
+    private static ServerHandler serverHandler;
 
-    public static void showInitialOptions() {
+    public CLI(SocketRequestSender socketRequestSender, ServerHandler serverHandler) {
+        CLI.socketRequestSender = socketRequestSender;
+        CLI.serverHandler = serverHandler;
+    }
+
+    public static void showInitialOptions() throws IOException, ClassNotFoundException {
+        System.out.println("*****************");
         System.out.println("Choose an option:");
         System.out.println("1. Sign In");
         System.out.println("2. Log In");
@@ -31,12 +47,14 @@ public class CLI {
     }
 
 
-    public static void showAuthenticatedOptions() {
+    public static void showAuthenticatedOptions() throws IOException, ClassNotFoundException {
+        System.out.println("*****************");
         System.out.println("Choose an option:");
         System.out.println("1. Choose File for Upload");
-        System.out.println("2. Choose File for Download");
-        System.out.println("3. Access Request");
-        System.out.println("4. Log Out");
+        System.out.println("2. See Uploaded Files");
+        System.out.println("3. Choose File for Download");
+        System.out.println("4. Access Request");
+        System.out.println("5. Log Out");
 
         int choice = scanner.nextInt();
         scanner.nextLine();  // Consume newline
@@ -46,12 +64,16 @@ public class CLI {
                 chooseFileForUpload();
                 break;
             case 2:
-                chooseFileForDownload();
+                socketRequestSender.sendRequest(
+                        new GetUploadedFilesRequest(Main.getToken(), Main.getUserName())).run(serverHandler);
                 break;
             case 3:
-                accessRequest();
+                chooseFileForDownload();
                 break;
             case 4:
+                accessRequest();
+                break;
+            case 5:
                 logOut();
                 break;
             default:
@@ -60,43 +82,36 @@ public class CLI {
     }
 
 
-    private static void signIn() {
-        System.out.print("Enter username: ");
-        String username = scanner.nextLine();
-
-
-
-
-
-        System.out.print("Enter password: ");
-        String password = scanner.nextLine();
-
-        // check if the username already exists
-
-//        db.addUser(username, password);
-    }
-
-    private static void logIn() {
+    private static void signIn() throws IOException, ClassNotFoundException {
         System.out.print("Enter username: ");
         String username = scanner.nextLine();
         System.out.print("Enter password: ");
         String password = scanner.nextLine();
-
-//        if (db.authenticate(username, password)) {
-//            currentUser = db.getUser(username);
-//            System.out.println("Logged in successfully.");
-//        } else {
-//            System.out.println("Invalid username or password.");
-//        }
+        socketRequestSender.sendRequest(new SignInRequest(username, password)).run(serverHandler);
+        showInitialOptions();
     }
 
-    private static void logOut() {
-//        currentUser = null;
+    private static void logIn() throws IOException, ClassNotFoundException {
+        System.out.print("Enter username: ");
+        String username = scanner.nextLine();
+        System.out.print("Enter password: ");
+        String password = scanner.nextLine();
+        socketRequestSender.sendRequest(new LoginRequest(username, password)).run(serverHandler);
+//        showAuthenticatedOptions();
+
+    }
+
+    private static void logOut() throws IOException, ClassNotFoundException {
+        Main.setUserName(null);
+        Main.setToken(null);
+        Main.setNumClient(0);
         System.out.println("Logged out successfully.");
         showInitialOptions();
     }
 
-    private static void chooseFileForUpload() {
+
+
+    private static void chooseFileForUpload() throws IOException, ClassNotFoundException {
         System.out.print("Enter the path of the file to upload: ");
         String filePath = scanner.nextLine();
         File file = new File(filePath);
@@ -104,51 +119,17 @@ public class CLI {
             System.out.println("File does not exist.");
             return;
         }
-
-//        List<File> files = currentUser.getFiles();
-//        files.add(file);
-//        currentUser.setFiles(files);
-//        System.out.println("File uploaded successfully.");
+        socketRequestSender.sendRequest(
+                new TCPUploadRequest(filePath, Main.getUserName(), Main.getToken(), Main.getNumClient())).run(serverHandler);
+        showAuthenticatedOptions();
     }
 
     private static void chooseFileForDownload() {
-//        List<File> files = currentUser.getFiles();
-//        if (files == null || files.isEmpty()) {
-//            System.out.println("No files available for download.");
-//            return;
-//        }
-//
-//        System.out.println("Files available for download:");
-//        for (int i = 0; i < files.size(); i++) {
-//            System.out.println((i + 1) + ". " + files.get(i).getName());
-//        }
-//
-//        System.out.print("Enter the number of the file to download: ");
-//        int fileNumber = scanner.nextInt();
-//        scanner.nextLine();  // Consume newline
-//
-//        if (fileNumber < 1 || fileNumber > files.size()) {
-//            System.out.println("Invalid file number.");
-//            return;
-//        }
 
-//        File fileToDownload = files.get(fileNumber - 1);
-//        System.out.println("Downloading file: " + fileToDownload.getName());
-        // Add file download logic here
     }
 
     private static void accessRequest() {
-//        System.out.print("Enter the file name for access request: ");
-//        String fileName = scanner.nextLine();
-//
-//        List<File> files = currentUser.getFiles();
-//        for (File file : files) {
-//            if (file.getName().equals(fileName)) {
-//                System.out.println("Access granted to file: " + fileName);
-//                return;
-//            }
-//        }
-//        System.out.println("Access denied. File not found.");
+
     }
 }
 

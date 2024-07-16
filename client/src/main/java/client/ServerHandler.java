@@ -58,12 +58,13 @@ public class ServerHandler extends Thread implements ResponseHandler {
     }
 
     @Override
-    public void handleLogInResponse(LoginResponse loginResponse) {
+    public void handleLogInResponse(LoginResponse loginResponse) throws IOException, ClassNotFoundException {
         if (loginResponse.isSuccessful()) {
             Main.setToken(loginResponse.getToken());
             Main.setUserName(loginResponse.getUserName());
             Main.setNumClient(loginResponse.getNumClient());
             System.out.println("Logged in successfully!");
+            CLI.showAuthenticatedOptions();
 
             try {
                 String folderPath = "./server/DataBase/client" + loginResponse.getNumClient();
@@ -75,6 +76,7 @@ public class ServerHandler extends Thread implements ResponseHandler {
             }
         } else {
             System.out.println("The username is not found!");
+            CLI.showInitialOptions();
         }
     }
 
@@ -108,7 +110,8 @@ public class ServerHandler extends Thread implements ResponseHandler {
             res.forEach((key, value) -> System.out.println(key + "     Accessible: " + value));
 
             String fileNameToRequest = "C:\\Users\\masoud\\Desktop\\dg5an9f-7f40bbe4-28ba-4e3f-8c14-46d948bfb0bc.png";
-            FileRequest fileRequest = new FileRequest(fileNameToRequest);
+            FileRequest fileRequest = new FileRequest(
+                    fileNameToRequest, getDownloadableFilesResponse.getUsername(), getDownloadableFilesResponse.getToken());
             sendFileRequest(fileRequest, serverAddress, socket, SERVER_PORT);
 
             String path = "./server/DataBase/client" + Main.getNumClient() + "/";
@@ -155,14 +158,15 @@ public class ServerHandler extends Thread implements ResponseHandler {
             InetAddress serverAddress = InetAddress.getByName("127.0.0.1");
             DatagramSocket socket = new DatagramSocket(101);
 
-            List<File> filesToSend = Arrays.asList(
-                    new File("C:\\Users\\masoud\\Desktop\\dg5an9f-7f40bbe4-28ba-4e3f-8c14-46d948bfb0bc.png"),
-                    new File("C:\\Users\\masoud\\Desktop\\file2.txt")
+            List<File> filesToSend = Arrays.asList( // TODO
+                    new File(tcpUploadResponse.getPath())
+//                    new File(tcpUploadResponse.getPath())
             );
 
             // Send files to the server
             for (File file : filesToSend) {
-                FileUploadManager uploadManager = new FileUploadManager(serverAddress, socket, file, tcpUploadResponse.getPort());
+                FileUploadManager uploadManager = new FileUploadManager(
+                        Main.getUserName(), Main.getToken(), serverAddress, socket, file, tcpUploadResponse.getPort());
                 uploadManager.start();
             }
         } catch (UnknownHostException | SocketException e) {

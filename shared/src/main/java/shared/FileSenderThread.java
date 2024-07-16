@@ -10,6 +10,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 public class FileSenderThread extends Thread {
+    private String username;
+    private String token;
     private InetAddress serverAddress;
     private DatagramSocket socket;
     private String uniqueID;
@@ -19,7 +21,11 @@ public class FileSenderThread extends Thread {
     private int totalParts;
     private int port;
 
-    public FileSenderThread(InetAddress serverAddress, DatagramSocket socket, String uniqueID, String fileName, int partNumber, byte[] fileData, int totalParts, int port) {
+    public FileSenderThread(
+            String username, String token, InetAddress serverAddress, DatagramSocket socket,
+            String uniqueID, String fileName, int partNumber, byte[] fileData, int totalParts, int port) {
+        this.username = username;
+        this.token = token;
         this.serverAddress = serverAddress;
         this.socket = socket;
         this.uniqueID = uniqueID;
@@ -33,7 +39,7 @@ public class FileSenderThread extends Thread {
     @Override
     public void run() {
         try {
-            UploadRequest request = new UploadRequest(uniqueID, fileName, partNumber, fileData, totalParts);
+            UploadRequest request = new UploadRequest(username, token, uniqueID, fileName, partNumber, fileData, totalParts);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);
             oos.writeObject(request);

@@ -7,11 +7,13 @@ import java.io.IOException;
 
 @JsonTypeName("TCPUploadRequest")
 public class TCPUploadRequest implements Request {
+    private String path;
     private String username;
     private String token;
     private int numClient;
 
-    public TCPUploadRequest(String username, String token, int numClient) {
+    public TCPUploadRequest(String path, String username, String token, int numClient) {
+        this.path = path;
         this.username = username;
         this.token = token;
         this.numClient = numClient;
@@ -30,6 +32,10 @@ public class TCPUploadRequest implements Request {
 
     public int getNumClient() {
         return numClient;
+    }
+
+    public String getPath() {
+        return path;
     }
 
     @Override

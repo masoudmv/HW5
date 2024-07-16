@@ -1,9 +1,9 @@
 package server;
 
-import shared.FileReceiver;
-import shared.FileRequest;
-import shared.FileSenderThread;
-import shared.UploadRequest;
+import shared.*;
+import shared.Model.User;
+import shared.response.TCPUploadResponse;
+
 import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -11,14 +11,21 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import static server.DataBase.findUser;
+
 public class UdpFileUploadHandler extends Thread {
+//    private String username;
+//    private String token;
     DatagramSocket socket;
     private final Map<String, FileReceiver> fileReceiverMap = new HashMap<>();
     DatagramPacket packet;
     int port;
     int numClient;
 
-    public UdpFileUploadHandler(DatagramSocket socket, DatagramPacket packet, int port, int numClient) {
+    public UdpFileUploadHandler( DatagramSocket socket, DatagramPacket packet, int port, int numClient) {
+//        this.token = token;
+//        this.username = username;
         this.socket = socket;
         this.packet = packet;
         this.port = port;
@@ -48,6 +55,12 @@ public class UdpFileUploadHandler extends Thread {
     }
 
     public static void handleFileUpload(UploadRequest uploadRequest, Map<String, FileReceiver> fileReceiverMap, DatagramSocket socket, InetAddress clientAddress, int numClient) throws IOException {
+        String username = uploadRequest.getUsername();
+        String token = uploadRequest.getToken();
+
+        boolean isValid = JwtUtil.validateToken(token, username);
+        if (!isValid) return;
+
         String uniqueID = uploadRequest.getUniqueID();
         String path = "./server/DataBase/client"+numClient + "/";
         FileReceiver fileReceiver = fileReceiverMap.computeIfAbsent(uniqueID, k -> new FileReceiver(uploadRequest.getFileName(), uploadRequest.getTotalParts(), path));
@@ -59,6 +72,9 @@ public class UdpFileUploadHandler extends Thread {
             fileReceiver.finish();
             fileReceiverMap.remove(uniqueID);
             System.out.println("File received and saved as " + fileReceiver.getFileName());
+
+            User user = findUser(username);
+            if (user != null) user.addFile(new File(fileReceiver.getFileName()));
         }
     }
 
@@ -81,7 +97,9 @@ public class UdpFileUploadHandler extends Thread {
             byte[] dataToSend = new byte[bytesRead];
             System.arraycopy(buffer, 0, dataToSend, 0, bytesRead);
 
-            FileSenderThread fileSenderThread = new FileSenderThread(clientAddress, socket, uniqueID, file.getName(), partNumber, dataToSend, totalParts, 101);
+            FileSenderThread fileSenderThread = new FileSenderThread(
+                    fileRequest.getUsername(), fileRequest.getToken(), clientAddress,
+                    socket, uniqueID, file.getName(), partNumber, dataToSend, totalParts, 101);
             fileSenderThread.start();
             partNumber++;
         }

@@ -97,12 +97,7 @@ public class ClientHandler extends Thread implements RequestHandler {
         int numClient = tcpUploadRequest.getNumClient();
         new UdpFileUploadHandler(socket, packet, port, numClient).start();
 
-        return new TCPUploadResponse(true, port); // Placeholder response, adjust as needed
-    }
-
-    @Override
-    public Response handleAccessRequest(AccessRequest accessRequest) {
-        return null;
+        return new TCPUploadResponse(tcpUploadRequest.getPath(), true, port); // Placeholder response, adjust as needed
     }
 
     @Override
@@ -139,5 +134,10 @@ public class ClientHandler extends Thread implements RequestHandler {
         new UdpFileUploadHandler(socket, packet, port, numClient).start();
         // TODO
         return new GetDownloadableFilesResponse(true);
+    }
+
+    @Override
+    public Response handleAccessRequest(AccessRequest accessRequest) {
+        return null;
     }
 }

@@ -1,17 +1,21 @@
 package shared;
 
 import java.io.Serializable;
+import java.io.StringReader;
 
 public class UploadRequest implements Serializable {
     private static final long serialVersionUID = 1L;
-
+    private String username;
+    private String token;
     private String uniqueID;
     private String fileName;
     private int packetNumber;
     private byte[] fileData;
     private int totalParts;
 
-    public UploadRequest(String uniqueID, String fileName, int packetNumber, byte[] fileData, int totalParts) {
+    public UploadRequest(String username, String token, String uniqueID, String fileName, int packetNumber, byte[] fileData, int totalParts) {
+        this.username = username;
+        this.token = token;
         this.uniqueID = uniqueID;
         this.fileName = fileName;
         this.packetNumber = packetNumber;
@@ -37,5 +41,13 @@ public class UploadRequest implements Serializable {
 
     public int getTotalParts() {
         return totalParts;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getToken() {
+        return token;
     }
 }

@@ -5,12 +5,16 @@ import java.net.*;
 import java.util.UUID;
 
 public class FileUploadManager extends Thread {
+    private String username;
+    private String token;
     private InetAddress serverAddress;
     private DatagramSocket socket;
     private File file;
     private int port;
 
-    public FileUploadManager(InetAddress serverAddress, DatagramSocket socket, File file, int port) {
+    public FileUploadManager(String username, String token, InetAddress serverAddress, DatagramSocket socket, File file, int port) {
+        this.username = username;
+        this.token = token;
         this.serverAddress = serverAddress;
         this.socket = socket;
         this.file = file;
@@ -33,7 +37,8 @@ public class FileUploadManager extends Thread {
                 byte[] dataToSend = new byte[bytesRead];
                 System.arraycopy(buffer, 0, dataToSend, 0, bytesRead);
 
-                FileSenderThread fileSenderThread = new FileSenderThread(serverAddress, socket, uniqueID, fileName, partNumber, dataToSend, totalParts, port);
+                FileSenderThread fileSenderThread = new FileSenderThread(
+                        username, token, serverAddress, socket, uniqueID, fileName, partNumber, dataToSend, totalParts, port);
                 fileSenderThread.start();
                 partNumber++;
             }
