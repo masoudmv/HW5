@@ -1,14 +1,12 @@
 package client;
 
 import client.socket.SocketRequestSender;
-import shared.request.GetUploadedFilesRequest;
-import shared.request.LoginRequest;
-import shared.request.SignInRequest;
-import shared.request.TCPUploadRequest;
+import shared.request.*;
 import shared.response.ResponseHandler;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class CLI {
@@ -112,6 +110,9 @@ public class CLI {
 
 
     private static void chooseFileForUpload() throws IOException, ClassNotFoundException {
+        ArrayList<String> paths = new ArrayList<>();
+
+
         System.out.print("Enter the path of the file to upload: ");
         String filePath = scanner.nextLine();
         File file = new File(filePath);
@@ -119,12 +120,27 @@ public class CLI {
             System.out.println("File does not exist.");
             return;
         }
+
+        paths.add(filePath);
+
+        System.out.println("Enter another File path or 'end' to continue.");
+        String path = scanner.nextLine();
+        while (!path.equals("end")){
+            paths.add(path);
+            System.out.println("Enter another File path or 'end' to continue.");
+            path = scanner.nextLine();
+        }
+
         socketRequestSender.sendRequest(
-                new TCPUploadRequest(filePath, Main.getUserName(), Main.getToken(), Main.getNumClient())).run(serverHandler);
+                new TCPUploadRequest(paths, Main.getUserName(), Main.getToken(), Main.getNumClient())).run(serverHandler);
         showAuthenticatedOptions();
     }
 
-    private static void chooseFileForDownload() {
+    private static void chooseFileForDownload() throws IOException, ClassNotFoundException {
+
+        socketRequestSender.sendRequest(
+                new GetDownloadableFilesRequest(Main.getToken(), Main.getUserName(), Main.getNumClient())).run(serverHandler);
+
 
     }
 

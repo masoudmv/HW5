@@ -4,16 +4,17 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import shared.response.Response;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 @JsonTypeName("TCPUploadRequest")
 public class TCPUploadRequest implements Request {
-    private String path;
+    private ArrayList<String> paths;
     private String username;
     private String token;
     private int numClient;
 
-    public TCPUploadRequest(String path, String username, String token, int numClient) {
-        this.path = path;
+    public TCPUploadRequest(ArrayList<String> paths, String username, String token, int numClient) {
+        this.paths = paths;
         this.username = username;
         this.token = token;
         this.numClient = numClient;
@@ -34,8 +35,8 @@ public class TCPUploadRequest implements Request {
         return numClient;
     }
 
-    public String getPath() {
-        return path;
+    public ArrayList<String> getPaths() {
+        return paths;
     }
 
     @Override

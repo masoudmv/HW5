@@ -12,6 +12,9 @@ import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +28,7 @@ public class ClientHandler extends Thread implements RequestHandler {
     private static final ConcurrentHashMap<String, SocketResponseSender> clientMap = new ConcurrentHashMap<>();
     private final SocketResponseSender socketResponseSender;
     private final DataBase dataBase;
+    private UdpFileUploadHandler udpFileUploadHandler;
     private String username;
 
     public ClientHandler(SocketResponseSender socketResponseSender, DataBase dataBase) {
@@ -40,6 +44,9 @@ public class ClientHandler extends Thread implements RequestHandler {
                 socketResponseSender.sendResponse(response);
             }
         } catch (Exception e) {
+            if (udpFileUploadHandler != null) {
+                udpFileUploadHandler.stopHandler();
+            }
             socketResponseSender.close();
         }
     }
@@ -54,12 +61,15 @@ public class ClientHandler extends Thread implements RequestHandler {
     }
 
     @Override
-    public Response handleLoginRequest(LoginRequest loginRequest) {
+    public Response handleLoginRequest(LoginRequest loginRequest) throws IOException {
         this.username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
         boolean successful = dataBase.authenticate(username, password);
         if (successful) {
             clientMap.put(username, socketResponseSender);
+            String folderPath = "./server/DataBase/client" + clientMap.size();
+            Path path = Paths.get(folderPath);
+            Files.createDirectories(path);
         }
         String token = JwtUtil.generateToken(username);
         return new LoginResponse(successful, token, username, clientMap.size());
@@ -90,14 +100,14 @@ public class ClientHandler extends Thread implements RequestHandler {
 
         int port = 100;
         DatagramSocket socket = new DatagramSocket(port); // Open datagram socket on port 100
-        // Map to hold file data for each unique ID
-        Map<String, FileReceiver> fileReceiverMap = new HashMap<>();
         byte[] buf = new byte[2048];
         DatagramPacket packet = new DatagramPacket(buf, buf.length);
         int numClient = tcpUploadRequest.getNumClient();
-        new UdpFileUploadHandler(socket, packet, port, numClient).start();
 
-        return new TCPUploadResponse(tcpUploadRequest.getPath(), true, port); // Placeholder response, adjust as needed
+        udpFileUploadHandler = new UdpFileUploadHandler(socket, packet, port, numClient);
+        udpFileUploadHandler.start();
+
+        return new TCPUploadResponse(tcpUploadRequest.getPaths(), true, port); // Placeholder response, adjust as needed
     }
 
     @Override
@@ -107,7 +117,7 @@ public class ClientHandler extends Thread implements RequestHandler {
 
         boolean isValid = JwtUtil.validateToken(token, username);
         if (!isValid) return new GetDownloadableFilesResponse(false);
-//
+
         User user = findUser(username);
         if (user == null) return new GetDownloadableFilesResponse(false);
 
@@ -126,13 +136,13 @@ public class ClientHandler extends Thread implements RequestHandler {
 
         int port = 100;
         DatagramSocket socket = new DatagramSocket(port); // Open datagram socket on port 100
-        // Map to hold file data for each unique ID
-        Map<String, FileReceiver> fileReceiverMap = new HashMap<>();
         byte[] buf = new byte[2048];
         DatagramPacket packet = new DatagramPacket(buf, buf.length);
         int numClient = getDownloadableFilesRequest.getNumClient();
-        new UdpFileUploadHandler(socket, packet, port, numClient).start();
-        // TODO
+
+        udpFileUploadHandler = new UdpFileUploadHandler(socket, packet, port, numClient);
+        udpFileUploadHandler.start();
+
         return new GetDownloadableFilesResponse(true);
     }
 

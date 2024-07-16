@@ -60,14 +60,16 @@ public class ServerHandler extends Thread implements ResponseHandler {
     @Override
     public void handleLogInResponse(LoginResponse loginResponse) throws IOException, ClassNotFoundException {
         if (loginResponse.isSuccessful()) {
+
             Main.setToken(loginResponse.getToken());
             Main.setUserName(loginResponse.getUserName());
             Main.setNumClient(loginResponse.getNumClient());
+
             System.out.println("Logged in successfully!");
             CLI.showAuthenticatedOptions();
 
             try {
-                String folderPath = "./server/DataBase/client" + loginResponse.getNumClient();
+                String folderPath = "./client/DataBase/client" + Main.getNumClient(); //TODO
                 Path path = Paths.get(folderPath);
                 Files.createDirectories(path);
                 System.out.println("Folder and necessary parent directories created successfully!");
@@ -81,7 +83,7 @@ public class ServerHandler extends Thread implements ResponseHandler {
     }
 
     @Override
-    public void handleGetUploadedFilesResponse(GetUploadedFilesResponse getUploadedFilesResponse) {
+    public void handleGetUploadedFilesResponse(GetUploadedFilesResponse getUploadedFilesResponse) throws IOException, ClassNotFoundException {
         if (!getUploadedFilesResponse.isValid()) {
             System.out.println("The request is not valid. Your token may have expired!");
         } else {
@@ -91,6 +93,7 @@ public class ServerHandler extends Thread implements ResponseHandler {
                 System.out.println(name);
             }
             System.out.println("----------------------");
+            CLI.showInitialOptions();
         }
     }
 
@@ -104,46 +107,72 @@ public class ServerHandler extends Thread implements ResponseHandler {
             int CLIENT_PORT = 101;
 
             InetAddress serverAddress = InetAddress.getByName("127.0.0.1");
-            DatagramSocket socket = new DatagramSocket(CLIENT_PORT);
+            DatagramSocket socket = null;
 
-            HashMap<String, Boolean> res = getDownloadableFilesResponse.getFiles();
-            res.forEach((key, value) -> System.out.println(key + "     Accessible: " + value));
+            try {
+                socket = new DatagramSocket(CLIENT_PORT);
 
-            String fileNameToRequest = "C:\\Users\\masoud\\Desktop\\dg5an9f-7f40bbe4-28ba-4e3f-8c14-46d948bfb0bc.png";
-            FileRequest fileRequest = new FileRequest(
-                    fileNameToRequest, getDownloadableFilesResponse.getUsername(), getDownloadableFilesResponse.getToken());
-            sendFileRequest(fileRequest, serverAddress, socket, SERVER_PORT);
+                HashMap<String, Boolean> res = getDownloadableFilesResponse.getFiles();
+                res.forEach((key, value) -> System.out.println(key + "     Accessible: " + value));
 
-            String path = "./server/DataBase/client" + Main.getNumClient() + "/";
+                // Reading user input safely
+                Scanner scanner = new Scanner(System.in);
+                String fileNameToRequest = null;
 
+                System.out.println("Enter the file name to request:");
+                if (scanner.hasNextLine()) {
+                    fileNameToRequest = scanner.nextLine();
+                } else {
+                    System.out.println("No input received.");
+                    return;
+                }
 
-            // Map to hold file data for each unique ID
-            Map<String, FileReceiver> fileReceiverMap = new HashMap<>();
+                FileRequest fileRequest = new FileRequest(
+                        fileNameToRequest, getDownloadableFilesResponse.getUsername(), getDownloadableFilesResponse.getToken());
+                sendFileRequest(fileRequest, serverAddress, socket, SERVER_PORT);
 
-            byte[] buf = new byte[PACKET_SIZE];
-            DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                String path = "./client/DataBase/client" + Main.getNumClient() + "/";
 
-            while (true) {
-                socket.receive(packet);
-                ByteArrayInputStream bais = new ByteArrayInputStream(packet.getData(), 0, packet.getLength());
-                ObjectInputStream ois = new ObjectInputStream(bais);
-                UploadRequest uploadRequest = (UploadRequest) ois.readObject();
+                // Map to hold file data for each unique ID
+                Map<String, FileReceiver> fileReceiverMap = new HashMap<>();
 
-                String uniqueID = uploadRequest.getUniqueID();
-                FileReceiver fileReceiver = fileReceiverMap.computeIfAbsent(uniqueID, k -> new FileReceiver(uploadRequest.getFileName(), uploadRequest.getTotalParts(), path));
+                byte[] buf = new byte[PACKET_SIZE];
+                DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
-                fileReceiver.addPacket(uploadRequest.getPacketNumber(), uploadRequest.getFileData());
-                System.out.println("Received packet number: " + uploadRequest.getPacketNumber() + " for file ID: " + uniqueID);
+                while (true) {
+                    socket.receive(packet);
+                    ByteArrayInputStream bais = new ByteArrayInputStream(packet.getData(), 0, packet.getLength());
+                    ObjectInputStream ois = new ObjectInputStream(bais);
+                    UploadRequest uploadRequest = (UploadRequest) ois.readObject();
 
-                if (fileReceiver.isComplete()) {
-                    fileReceiver.finish();
-                    fileReceiverMap.remove(uniqueID);
-                    System.out.println("File received and saved as " + fileReceiver.getFileName());
+                    String uniqueID = uploadRequest.getUniqueID();
+                    FileReceiver fileReceiver = fileReceiverMap.computeIfAbsent(uniqueID, k -> new FileReceiver(uploadRequest.getFileName(), uploadRequest.getTotalParts(), path));
+
+                    fileReceiver.addPacket(uploadRequest.getPacketNumber(), uploadRequest.getFileData());
+                    System.out.println("Received packet number: " + uploadRequest.getPacketNumber() + " for file ID: " + uniqueID);
+
+                    if (fileReceiver.isComplete()) {
+                        fileReceiver.finish();
+                        fileReceiverMap.remove(uniqueID);
+                        System.out.println("File received and saved as " + fileReceiver.getFileName());
+
+                        // Close the socket after receiving the file
+                        socket.close();
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (socket != null && !socket.isClosed()) {
+                    socket.close();
+                    System.out.println("Socket closed.");
                 }
             }
         }
         System.out.println("----------------------");
     }
+
 
     @Override
     public void handleTCPUploadResponse(TCPUploadResponse tcpUploadResponse) {
@@ -155,17 +184,27 @@ public class ServerHandler extends Thread implements ResponseHandler {
         System.out.println("Starting UDP file upload...");
 
         try {
+
+            int numFiles = tcpUploadResponse.getPaths().size();
             InetAddress serverAddress = InetAddress.getByName("127.0.0.1");
             DatagramSocket socket = new DatagramSocket(101);
 
-            List<File> filesToSend = Arrays.asList( // TODO
-                    new File(tcpUploadResponse.getPath())
-//                    new File(tcpUploadResponse.getPath())
-            );
+            List<File> filesToSend = new ArrayList<>();
+//                    /
+//                    new Lis[numFiles];
+//                    Arrays.asList( // TODO
+//                    new File(),
+////                    new File(tcpUploadResponse.getPath())
+//            );
+
+
+            for (int i = 0; i < numFiles; i++) {
+                filesToSend.add(new File(tcpUploadResponse.getPaths().get(i)));
+            }
 
             // Send files to the server
             for (File file : filesToSend) {
-                FileUploadManager uploadManager = new FileUploadManager(
+                FileUplocdadManager uploadManager = new FileUploadManager(
                         Main.getUserName(), Main.getToken(), serverAddress, socket, file, tcpUploadResponse.getPort());
                 uploadManager.start();
             }

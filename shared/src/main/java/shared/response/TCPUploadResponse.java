@@ -3,15 +3,16 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 @JsonTypeName("TCPUploadResponse")
 public class TCPUploadResponse implements Response{
-    String path;
+    private ArrayList<String> paths;
     private boolean valid;
     private int port;
 
-    public TCPUploadResponse(String path, boolean valid, int port) {
-        this.path = path;
+    public TCPUploadResponse(ArrayList<String> paths, boolean valid, int port) {
+        this.paths = paths;
         this.valid = valid;
         this.port = port;
     }
@@ -31,8 +32,8 @@ public class TCPUploadResponse implements Response{
         return valid;
     }
 
-    public String getPath() {
-        return path;
+    public ArrayList<String> getPaths() {
+        return paths;
     }
 
     @Override

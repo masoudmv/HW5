@@ -2,6 +2,7 @@ package shared.response;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 @JsonTypeName("GetUploadedFilesResponse")
@@ -31,7 +32,7 @@ public class GetUploadedFilesResponse implements Response{
     }
 
     @Override
-    public void run(ResponseHandler responseHandler) {
+    public void run(ResponseHandler responseHandler) throws IOException, ClassNotFoundException {
         responseHandler.handleGetUploadedFilesResponse(this);
     }
 }

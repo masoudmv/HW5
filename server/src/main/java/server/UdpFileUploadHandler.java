@@ -15,17 +15,14 @@ import java.util.UUID;
 import static server.DataBase.findUser;
 
 public class UdpFileUploadHandler extends Thread {
-//    private String username;
-//    private String token;
-    DatagramSocket socket;
+    private final DatagramSocket socket;
     private final Map<String, FileReceiver> fileReceiverMap = new HashMap<>();
-    DatagramPacket packet;
-    int port;
-    int numClient;
+    private final DatagramPacket packet;
+    private final int port;
+    private final int numClient;
+    private volatile boolean running = true;
 
-    public UdpFileUploadHandler( DatagramSocket socket, DatagramPacket packet, int port, int numClient) {
-//        this.token = token;
-//        this.username = username;
+    public UdpFileUploadHandler(DatagramSocket socket, DatagramPacket packet, int port, int numClient) {
         this.socket = socket;
         this.packet = packet;
         this.port = port;
@@ -35,8 +32,7 @@ public class UdpFileUploadHandler extends Thread {
     @Override
     public void run() {
         try {
-
-            while (true) {
+            while (running) {
                 socket.receive(packet);
                 ByteArrayInputStream bais = new ByteArrayInputStream(packet.getData(), 0, packet.getLength());
                 ObjectInputStream ois = new ObjectInputStream(bais);
@@ -48,10 +44,19 @@ public class UdpFileUploadHandler extends Thread {
                     handleFileRequest((FileRequest) receivedObject, socket, packet.getAddress());
                 }
             }
-
         } catch (IOException | ClassNotFoundException ex) {
-            throw new RuntimeException(ex);
+            if (running) {
+                ex.printStackTrace();
+            }
+        } finally {
+            socket.close();
+            System.out.println("Socket closed.");
         }
+    }
+
+    public void stopHandler() {
+        running = false;
+        socket.close();
     }
 
     public static void handleFileUpload(UploadRequest uploadRequest, Map<String, FileReceiver> fileReceiverMap, DatagramSocket socket, InetAddress clientAddress, int numClient) throws IOException {
@@ -79,7 +84,8 @@ public class UdpFileUploadHandler extends Thread {
     }
 
     private static void handleFileRequest(FileRequest fileRequest, DatagramSocket socket, InetAddress clientAddress) throws IOException {
-        File file = new File("C:\\Users\\masoud\\Desktop\\dg5an9f-7f40bbe4-28ba-4e3f-8c14-46d948bfb0bc.png");
+
+        File file = new File(fileRequest.getFileName());
         if (!file.exists()) {
             System.err.println("File not found: " + file.getAbsolutePath());
             return;
@@ -105,6 +111,7 @@ public class UdpFileUploadHandler extends Thread {
         }
 
         fis.close();
+//        socket.close();
         System.out.println("File sent to client: " + file.getName());
     }
 }

@@ -3,6 +3,9 @@ package shared.request;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import shared.response.Response;
+
+import java.io.IOException;
+
 @JsonTypeName("LoginRequest")
 public class LoginRequest implements Request{
 
@@ -26,7 +29,7 @@ public class LoginRequest implements Request{
     }
 
     @Override
-    public Response run(RequestHandler requestHandler) {
+    public Response run(RequestHandler requestHandler) throws IOException {
         return requestHandler.handleLoginRequest(this);
     }
 }
