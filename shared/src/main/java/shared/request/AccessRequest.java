@@ -8,7 +8,8 @@ public class AccessRequest implements Request{
     String username;
     private String fileName;
 
-    public AccessRequest(String fileName) {
+    public AccessRequest(String username, String fileName) {
+        this.username = username;
         this.fileName = fileName;
     }
 

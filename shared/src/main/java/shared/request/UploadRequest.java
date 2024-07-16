@@ -3,19 +3,20 @@ package shared.request;
 import java.io.Serializable;
 
 public class UploadRequest implements Serializable {
-    private static final long serialVersionUID = 1L; // ???
+    private static final long serialVersionUID = 1L;
+
     private String uniqueID;
     private String fileName;
     private int packetNumber;
     private byte[] fileData;
-    private boolean isLastPacket;
+    private int totalParts;
 
-    public UploadRequest(String uniqueID, String fileName, int packetNumber, byte[] fileData, boolean isLastPacket) {
+    public UploadRequest(String uniqueID, String fileName, int packetNumber, byte[] fileData, int totalParts) {
         this.uniqueID = uniqueID;
         this.fileName = fileName;
         this.packetNumber = packetNumber;
         this.fileData = fileData;
-        this.isLastPacket = isLastPacket;
+        this.totalParts = totalParts;
     }
 
     public String getUniqueID() {
@@ -34,7 +35,7 @@ public class UploadRequest implements Serializable {
         return fileData;
     }
 
-    public boolean isLastPacket() {
-        return isLastPacket;
+    public int getTotalParts() {
+        return totalParts;
     }
 }

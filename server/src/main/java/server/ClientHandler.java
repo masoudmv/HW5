@@ -1,31 +1,32 @@
 package server;
 
 import server.socket.SocketResponseSender;
+import shared.FileReceiver;
 import shared.JwtUtil;
 import shared.Model.User;
 import shared.request.*;
 import shared.response.*;
 
+import java.io.IOException;
+import java.net.DatagramSocket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static server.DataBase.findUser;
 
 public class ClientHandler extends Thread implements RequestHandler {
     private static final ConcurrentHashMap<String, SocketResponseSender> clientMap = new ConcurrentHashMap<>();
-    private SocketResponseSender socketResponseSender;
-    private DataBase dataBase;
-    private String username;  // This field stores the username of the logged-in client
-
+    private final SocketResponseSender socketResponseSender;
+    private final DataBase dataBase;
+    private String username;
 
     public ClientHandler(SocketResponseSender socketResponseSender, DataBase dataBase) {
         this.dataBase = dataBase;
         this.socketResponseSender = socketResponseSender;
     }
-
 
     @Override
     public void run() {
@@ -39,15 +40,8 @@ public class ClientHandler extends Thread implements RequestHandler {
         }
     }
 
-
-//    @Override
-//    public Response handleHiRequest(HiRequest hiRequest) {
-//        System.out.println("naisbdaVGFYDVS");
-//        return new HiResponse();
-//    }
-
     @Override
-    public Response handleSignInRequest(SignInRequest signInRequest) { //todo
+    public Response handleSignInRequest(SignInRequest signInRequest) {
         String username = signInRequest.getUsername();
         String password = signInRequest.getPassword();
 
@@ -56,38 +50,19 @@ public class ClientHandler extends Thread implements RequestHandler {
     }
 
     @Override
-    public Response handleAccessRequest(AccessRequest accessRequest) {
-//        String targetUsername = accessRequest.getTargetUsername();
-//        SocketResponseSender targetClient = clientMap.get(targetUsername);
-//
-//        if (targetClient != null) {
-//            // Send AcceptRequest to the target client
-//            targetClient.sendRequest(new AcceptRequest(accessRequest.getRequestingUsername()));
-//            return new AccessResponse("Access request sent to target client", targetUsername, accessRequest.getRequestingUsername());
-//        } else {
-//            return new AccessResponse("Target client not found", targetUsername, accessRequest.getRequestingUsername());
-//        }
-        return null;
+    public Response handleLoginRequest(LoginRequest loginRequest) {
+        this.username = loginRequest.getUsername();
+        String password = loginRequest.getPassword();
+        boolean successful = dataBase.authenticate(username, password);
+        if (successful) {
+            clientMap.put(username, socketResponseSender);
+        }
+        String token = JwtUtil.generateToken(username);
+        return new LoginResponse(successful, token, username, clientMap.size());
     }
-
-//    @Override
-//    public Response handleAcceptRequest(AcceptRequest acceptRequest) {
-//        String requestingUsername = acceptRequest.getRequestingUsername();
-//        SocketResponseSender requestingClient = clientMap.get(requestingUsername);
-//
-//        if (requestingClient != null) {
-//            // Send an AccessResponse to the original requester
-//            requestingClient.sendRequest(new AccessResponse("Access accepted", null, requestingUsername));
-//        }
-//        return null;
-//    }
-
-
 
     @Override
     public Response handleGetUploadedFilesRequest(GetUploadedFilesRequest getUploadedFilesRequest) {
-
-
         String token = getUploadedFilesRequest.getToken();
         String username = getUploadedFilesRequest.getUserName();
 
@@ -101,9 +76,28 @@ public class ClientHandler extends Thread implements RequestHandler {
         return new GetUploadedFilesResponse(true, out);
     }
 
+    @Override
+    public Response handleTCPUploadRequest(TCPUploadRequest tcpUploadRequest) throws IOException, ClassNotFoundException {
+        String token = tcpUploadRequest.getToken();
+        String username = tcpUploadRequest.getUsername();
+
+        boolean isValid = JwtUtil.validateToken(token, username);
+        if (!isValid) return new TCPUploadResponse(false);
 
 
+//        System.out.println("UUUUUUUUDDDDDDDDDDPPPPPPPPPPP");
+        // Start the UDP file upload handler in a new thread
+        int port = 100;
+        UdpFileUploadHandler udpFileUploadHandler = new UdpFileUploadHandler(port);
+        udpFileUploadHandler.start();
 
+        return new TCPUploadResponse(true, port); // Placeholder response, adjust as needed
+    }
+
+    @Override
+    public Response handleAccessRequest(AccessRequest accessRequest) {
+        return null;
+    }
 
     @Override
     public Response handleGetDownloadableFilesRequest(GetDownloadableFilesRequest getDownloadableFilesRequest) {
@@ -114,30 +108,17 @@ public class ClientHandler extends Thread implements RequestHandler {
         boolean isValid = JwtUtil.validateToken(token, username);
         if (!isValid) return new GetUploadedFilesResponse(false);
 
-
         HashMap<String, Boolean> res = new HashMap<>();
-        List<String> accessables =  findUser(username).getHasAccessTo();
+        List<String> accessables = findUser(username).getHasAccessTo();
         List<User> users = DataBase.getUsers();
-        for (User user : users){
+        for (User user : users) {
             ArrayList<String> files = user.getFileStrings();
-            for (String name : files){
+            for (String name : files) {
                 if (accessables.contains(name)) res.put(name, true);
                 else res.put(name, false);
             }
         }
 
         return new GetDownloadableFilesResponse(true, res);
-    }
-
-    @Override
-    public Response handleLoginRequest(LoginRequest loginRequest) {
-        this.username = loginRequest.getUsername();
-        String password = loginRequest.getPassword();
-        boolean successful = dataBase.authenticate(username, password);
-        if (successful) {
-            clientMap.put(username, socketResponseSender);
-        }
-        String token = JwtUtil.generateToken(username);
-        return new LoginResponse(successful, token, username); //
     }
 }

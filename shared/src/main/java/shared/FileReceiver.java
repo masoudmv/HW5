@@ -7,27 +7,28 @@ import java.util.Map;
 
 public class FileReceiver {
     private String fileName;
+    private int totalParts;
     private Map<Integer, byte[]> receivedPackets = new HashMap<>();
-    private int packetsReceived = 0;
 
-    public FileReceiver(String fileName) {
+    public FileReceiver(String fileName, int totalParts) {
         this.fileName = "C:\\Users\\masoud\\Desktop\\source\\" + fileName;
+        this.totalParts = totalParts;
     }
 
     public synchronized void addPacket(int packetNumber, byte[] data) {
         receivedPackets.put(packetNumber, data);
-        packetsReceived++;
+    }
+
+    public boolean isComplete() {
+        return receivedPackets.size() == totalParts;
     }
 
     public void finish() throws IOException {
-        FileOutputStream fos = new FileOutputStream(fileName);
-        for (int i = 0; i < receivedPackets.size(); i++) {
-            byte[] data = receivedPackets.get(i);
-            if (data != null) {
-                fos.write(data);
+        try (FileOutputStream fos = new FileOutputStream(fileName)) {
+            for (int i = 0; i < totalParts; i++) {
+                fos.write(receivedPackets.get(i));
             }
         }
-        fos.close();
     }
 
     public String getFileName() {
