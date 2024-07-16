@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static server.DataBase.findUser;
-import static server.UdpServer.*;
+//import static server.UdpServer.*;
 
 public class ClientHandler extends Thread implements RequestHandler {
     private static final ConcurrentHashMap<String, SocketResponseSender> clientMap = new ConcurrentHashMap<>();
@@ -92,9 +92,10 @@ public class ClientHandler extends Thread implements RequestHandler {
         DatagramSocket socket = new DatagramSocket(port); // Open datagram socket on port 100
         // Map to hold file data for each unique ID
         Map<String, FileReceiver> fileReceiverMap = new HashMap<>();
-        byte[] buf = new byte[PACKET_SIZE];
+        byte[] buf = new byte[2048];
         DatagramPacket packet = new DatagramPacket(buf, buf.length);
-        new UdpFileUploadHandler(socket, packet, port).start();
+        int numClient = tcpUploadRequest.getNumClient();
+        new UdpFileUploadHandler(socket, packet, port, numClient).start();
 
         return new TCPUploadResponse(true, port); // Placeholder response, adjust as needed
     }
@@ -134,7 +135,8 @@ public class ClientHandler extends Thread implements RequestHandler {
         Map<String, FileReceiver> fileReceiverMap = new HashMap<>();
         byte[] buf = new byte[2048];
         DatagramPacket packet = new DatagramPacket(buf, buf.length);
-        new UdpFileUploadHandler(socket, packet, port).start();
+        int numClient = getDownloadableFilesRequest.getNumClient();
+        new UdpFileUploadHandler(socket, packet, port, numClient).start();
         // TODO
         return new GetDownloadableFilesResponse(true);
     }

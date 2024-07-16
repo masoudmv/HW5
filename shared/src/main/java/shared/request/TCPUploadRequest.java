@@ -9,10 +9,12 @@ import java.io.IOException;
 public class TCPUploadRequest implements Request {
     private String username;
     private String token;
+    private int numClient;
 
-    public TCPUploadRequest(String user, String token) {
-        this.username = user;
+    public TCPUploadRequest(String username, String token, int numClient) {
+        this.username = username;
         this.token = token;
+        this.numClient = numClient;
     }
 
     public TCPUploadRequest() {
@@ -24,6 +26,10 @@ public class TCPUploadRequest implements Request {
 
     public String getToken() {
         return token;
+    }
+
+    public int getNumClient() {
+        return numClient;
     }
 
     @Override

@@ -9,18 +9,15 @@ import shared.UploadRequest;
 import shared.request.Request;
 import shared.response.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static client.UdpClient.PACKET_SIZE;
-import static client.UdpClient.sendFileRequest;
+//import static client.UdpClient.PACKET_SIZE;
+//import static client.UdpClient.sendFileRequest;
 
 /**
  * This class handles the Responses in the client side
@@ -65,10 +62,11 @@ public class ServerHandler extends Thread implements ResponseHandler {
         if (loginResponse.isSuccessful()) {
             Main.setToken(loginResponse.getToken());
             Main.setUserName(loginResponse.getUserName());
+            Main.setNumClient(loginResponse.getNumClient());
             System.out.println("Logged in successfully!");
 
             try {
-                String folderPath = "./client/src/client" + loginResponse.getNumClient();
+                String folderPath = "./server/DataBase/client" + loginResponse.getNumClient();
                 Path path = Paths.get(folderPath);
                 Files.createDirectories(path);
                 System.out.println("Folder and necessary parent directories created successfully!");
@@ -113,6 +111,9 @@ public class ServerHandler extends Thread implements ResponseHandler {
             FileRequest fileRequest = new FileRequest(fileNameToRequest);
             sendFileRequest(fileRequest, serverAddress, socket, SERVER_PORT);
 
+            String path = "./server/DataBase/client" + Main.getNumClient() + "/";
+
+
             // Map to hold file data for each unique ID
             Map<String, FileReceiver> fileReceiverMap = new HashMap<>();
 
@@ -126,7 +127,7 @@ public class ServerHandler extends Thread implements ResponseHandler {
                 UploadRequest uploadRequest = (UploadRequest) ois.readObject();
 
                 String uniqueID = uploadRequest.getUniqueID();
-                FileReceiver fileReceiver = fileReceiverMap.computeIfAbsent(uniqueID, k -> new FileReceiver(uploadRequest.getFileName(), uploadRequest.getTotalParts()));
+                FileReceiver fileReceiver = fileReceiverMap.computeIfAbsent(uniqueID, k -> new FileReceiver(uploadRequest.getFileName(), uploadRequest.getTotalParts(), path));
 
                 fileReceiver.addPacket(uploadRequest.getPacketNumber(), uploadRequest.getFileData());
                 System.out.println("Received packet number: " + uploadRequest.getPacketNumber() + " for file ID: " + uniqueID);
@@ -167,5 +168,17 @@ public class ServerHandler extends Thread implements ResponseHandler {
         } catch (UnknownHostException | SocketException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void sendFileRequest(FileRequest fileRequest, InetAddress serverAddress, DatagramSocket socket, int port) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(fileRequest);
+        oos.flush();
+        byte[] dataToSend = baos.toByteArray();
+
+        DatagramPacket packet = new DatagramPacket(dataToSend, dataToSend.length, serverAddress, port);
+        socket.send(packet);
+        System.out.println("Sent file request for: " + fileRequest.getFileName());
     }
 }

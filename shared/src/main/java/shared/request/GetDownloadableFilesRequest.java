@@ -8,11 +8,12 @@ import java.net.SocketException;
 public class GetDownloadableFilesRequest implements Request {
     private String token;
     private String username;
+    private int numClient;
 
-    public GetDownloadableFilesRequest(String token, String username) {
-
+    public GetDownloadableFilesRequest(String token, String username, int numClient) {
         this.token = token;
         this.username = username;
+        this.numClient = numClient;
     }
 
     public GetDownloadableFilesRequest() {
@@ -27,6 +28,9 @@ public class GetDownloadableFilesRequest implements Request {
         return username;
     }
 
+    public int getNumClient() {
+        return numClient;
+    }
 
     @Override
     public Response run(RequestHandler requestHandler) throws SocketException {

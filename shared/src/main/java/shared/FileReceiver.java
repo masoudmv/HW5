@@ -10,8 +10,8 @@ public class FileReceiver {
     private int totalParts;
     private Map<Integer, byte[]> receivedPackets = new HashMap<>();
 
-    public FileReceiver(String fileName, int totalParts) {
-        this.fileName = "C:\\Users\\masoud\\Desktop\\source\\" + fileName;
+    public FileReceiver(String fileName, int totalParts, String path) {
+        this.fileName = path + fileName;
         this.totalParts = totalParts;
     }
 

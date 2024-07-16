@@ -2,18 +2,16 @@ package client;//package client;
 
 import client.socket.SocketRequestSender;
 import shared.request.*;
-
-import java.io.File;
 import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.util.Arrays;
-import java.util.List;
 
 
 public class Main {
     private static String token;
     private static String userName;
+    private static int numClient;
+
+
+
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         SocketRequestSender socketRequestSender = new SocketRequestSender();
         ServerHandler serverHandler = new ServerHandler(socketRequestSender);
@@ -21,55 +19,14 @@ public class Main {
 
         socketRequestSender.sendRequest(new SignInRequest("a", "1")).run(serverHandler);
         socketRequestSender.sendRequest(new LoginRequest("a", "1")).run(serverHandler);
-        socketRequestSender.sendRequest(new GetDownloadableFilesRequest(token, "a")).run(serverHandler);
+        socketRequestSender.sendRequest(new GetDownloadableFilesRequest(token, "a", numClient)).run(serverHandler);
 //        socketRequestSender.sendRequest(new GetDownloadableFilesRequest("a", "a")).run(serverHandler);
-//        socketRequestSender.sendRequest(new TCPUploadRequest("a", token)).run(serverHandler);
+//        socketRequestSender.sendRequest(new TCPUploadRequest("a", token, numClient)).run(serverHandler);
 
 
 
 
 //        socketRequestSender.sendRequest(new GetUploadedFilesRequest(token, "a")).run(serverHandler);
-
-
-
-
-//        InetAddress serverAddress = InetAddress.getByName("127.0.0.1");
-//        DatagramSocket socket = new DatagramSocket();
-//
-//        // List of files to be sent
-//        List<File> filesToSend = Arrays.asList(
-//                new File("C:\\Users\\masoud\\Desktop\\dg5an9f-7f40bbe4-28ba-4e3f-8c14-46d948bfb0bc.png")
-////                new File("C:\\Users\\masoud\\Desktop\\file2.txt")
-//        );
-//
-//        // Create and start a FileUploadManager for each file
-//        for (File file : filesToSend) {
-//            shared.FileUploadManager uploadManager = new shared.FileUploadManager(serverAddress, socket, file, 8080);
-//            uploadManager.start();
-//        }
-
-
-
-
-//        InetAddress serverAddress = InetAddress.getByName("127.0.0.1");
-//        DatagramSocket socket = new DatagramSocket();
-//
-//        // List of files to be sent
-//        List<File> filesToSend = Arrays.asList(
-////                new File("C:\\Users\\masoud\\Desktop\\file1.txt")
-//                new File("C:\\Users\\masoud\\Desktop\\file2.txt")
-//        );
-//
-//        // Create and start a FileUploadManager for each file
-//        for (File file : filesToSend) {
-//            FileUploadManager uploadManager = new FileUploadManager(serverAddress, socket, file, PORT);
-//            uploadManager.start();
-//        }
-
-
-
-
-
 
     }
 
@@ -87,6 +44,14 @@ public class Main {
 
     public static String getUserName() {
         return userName;
+    }
+
+    public static int getNumClient() {
+        return numClient;
+    }
+
+    public static void setNumClient(int numClient) {
+        Main.numClient = numClient;
     }
 }
 
