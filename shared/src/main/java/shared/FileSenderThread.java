@@ -2,8 +2,6 @@ package shared;
 
 //import shared.UploadRequest;
 
-import shared.request.UploadRequest;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;

@@ -1,14 +1,17 @@
 package server;
 
 import server.socket.SocketResponseSender;
-import shared.FileReceiver;
-import shared.JwtUtil;
+import shared.*;
 import shared.Model.User;
 import shared.request.*;
 import shared.response.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +19,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static server.DataBase.findUser;
+import static server.UdpServer.*;
 
 public class ClientHandler extends Thread implements RequestHandler {
     private static final ConcurrentHashMap<String, SocketResponseSender> clientMap = new ConcurrentHashMap<>();
@@ -84,12 +88,13 @@ public class ClientHandler extends Thread implements RequestHandler {
         boolean isValid = JwtUtil.validateToken(token, username);
         if (!isValid) return new TCPUploadResponse(false);
 
-
-//        System.out.println("UUUUUUUUDDDDDDDDDDPPPPPPPPPPP");
-        // Start the UDP file upload handler in a new thread
         int port = 100;
-        UdpFileUploadHandler udpFileUploadHandler = new UdpFileUploadHandler(port);
-        udpFileUploadHandler.start();
+        DatagramSocket socket = new DatagramSocket(port); // Open datagram socket on port 100
+        // Map to hold file data for each unique ID
+        Map<String, FileReceiver> fileReceiverMap = new HashMap<>();
+        byte[] buf = new byte[PACKET_SIZE];
+        DatagramPacket packet = new DatagramPacket(buf, buf.length);
+        new UdpFileUploadHandler(socket, packet, port).start();
 
         return new TCPUploadResponse(true, port); // Placeholder response, adjust as needed
     }
@@ -100,25 +105,37 @@ public class ClientHandler extends Thread implements RequestHandler {
     }
 
     @Override
-    public Response handleGetDownloadableFilesRequest(GetDownloadableFilesRequest getDownloadableFilesRequest) {
+    public Response handleGetDownloadableFilesRequest(GetDownloadableFilesRequest getDownloadableFilesRequest) throws SocketException {
         String token = getDownloadableFilesRequest.getToken();
-        String username = getDownloadableFilesRequest.getUserName();
-        System.out.println("Sending response ...");
+        String username = getDownloadableFilesRequest.getUsername();
 
         boolean isValid = JwtUtil.validateToken(token, username);
-        if (!isValid) return new GetUploadedFilesResponse(false);
+        if (!isValid) return new GetDownloadableFilesResponse(false);
+//
+        User user = findUser(username);
+        if (user == null) return new GetDownloadableFilesResponse(false);
 
         HashMap<String, Boolean> res = new HashMap<>();
-        List<String> accessables = findUser(username).getHasAccessTo();
+        List<String> accessables = user.getHasAccessTo();
         List<User> users = DataBase.getUsers();
-        for (User user : users) {
-            ArrayList<String> files = user.getFileStrings();
+        for (User u : users) {
+            ArrayList<String> files = u.getFileStrings();
             for (String name : files) {
                 if (accessables.contains(name)) res.put(name, true);
                 else res.put(name, false);
             }
         }
 
-        return new GetDownloadableFilesResponse(true, res);
+        System.out.println("SENDING response ...");
+
+        int port = 100;
+        DatagramSocket socket = new DatagramSocket(port); // Open datagram socket on port 100
+        // Map to hold file data for each unique ID
+        Map<String, FileReceiver> fileReceiverMap = new HashMap<>();
+        byte[] buf = new byte[2048];
+        DatagramPacket packet = new DatagramPacket(buf, buf.length);
+        new UdpFileUploadHandler(socket, packet, port).start();
+        // TODO
+        return new GetDownloadableFilesResponse(true);
     }
 }

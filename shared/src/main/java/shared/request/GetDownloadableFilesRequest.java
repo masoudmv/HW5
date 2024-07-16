@@ -2,15 +2,17 @@ package shared.request;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import shared.response.Response;
+import java.net.SocketException;
 
 @JsonTypeName("GetDownloadableFilesRequest")
 public class GetDownloadableFilesRequest implements Request {
-    String token;
-    String userName;
+    private String token;
+    private String username;
 
-    public GetDownloadableFilesRequest(String token, String userName) {
+    public GetDownloadableFilesRequest(String token, String username) {
+
         this.token = token;
-        this.userName = userName;
+        this.username = username;
     }
 
     public GetDownloadableFilesRequest() {
@@ -21,13 +23,13 @@ public class GetDownloadableFilesRequest implements Request {
         return token;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
 
     @Override
-    public Response run(RequestHandler requestHandler) {
+    public Response run(RequestHandler requestHandler) throws SocketException {
         return requestHandler.handleGetDownloadableFilesRequest(this);
     }
 

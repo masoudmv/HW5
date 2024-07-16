@@ -1,7 +1,5 @@
 package shared;
 
-import shared.request.UploadRequest;
-
 import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;

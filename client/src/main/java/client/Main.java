@@ -14,14 +14,16 @@ import java.util.List;
 public class Main {
     private static String token;
     private static String userName;
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         SocketRequestSender socketRequestSender = new SocketRequestSender();
         ServerHandler serverHandler = new ServerHandler(socketRequestSender);
 
 
         socketRequestSender.sendRequest(new SignInRequest("a", "1")).run(serverHandler);
         socketRequestSender.sendRequest(new LoginRequest("a", "1")).run(serverHandler);
-        socketRequestSender.sendRequest(new TCPUploadRequest("a", token)).run(serverHandler);
+        socketRequestSender.sendRequest(new GetDownloadableFilesRequest(token, "a")).run(serverHandler);
+//        socketRequestSender.sendRequest(new GetDownloadableFilesRequest("a", "a")).run(serverHandler);
+//        socketRequestSender.sendRequest(new TCPUploadRequest("a", token)).run(serverHandler);
 
 
 

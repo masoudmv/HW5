@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import shared.request.LoginRequest;
 
+import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
@@ -22,5 +23,5 @@ import java.net.UnknownHostException;
 
 })
 public interface Response {
-    void run(ResponseHandler responseHandler) throws SocketException, UnknownHostException;
+    void run(ResponseHandler responseHandler) throws IOException, ClassNotFoundException;
 }

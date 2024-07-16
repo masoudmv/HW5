@@ -2,6 +2,7 @@ package shared.response;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -14,6 +15,10 @@ public class GetDownloadableFilesResponse implements Response{
     public GetDownloadableFilesResponse(boolean invalid, HashMap<String, Boolean> files) {
         this.invalid = invalid;
         this.files = files;
+    }
+
+    public GetDownloadableFilesResponse(boolean invalid) {
+        this.invalid = invalid;
     }
 
     public GetDownloadableFilesResponse() {
@@ -30,7 +35,7 @@ public class GetDownloadableFilesResponse implements Response{
 
 
     @Override
-    public void run(ResponseHandler responseHandler) {
+    public void run(ResponseHandler responseHandler) throws IOException, ClassNotFoundException {
         responseHandler.handleGetDownloadableFilesResponse(this);
     }
 }
