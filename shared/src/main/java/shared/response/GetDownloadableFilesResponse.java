@@ -9,46 +9,29 @@ import java.util.SplittableRandom;
 
 @JsonTypeName("GetDownloadableFilesResponse")
 public class GetDownloadableFilesResponse implements Response{
-    private String username;
-    private String token;
-    private boolean invalid;
-    private HashMap<String, Boolean> files = new HashMap<>();
+    private boolean valid;
+    private ArrayList<String> filesList = new ArrayList<>();
 
-
-    public GetDownloadableFilesResponse(String username, String token, boolean invalid, HashMap<String, Boolean> files) {
-        this.username = username;
-        this.token = token;
-        this.invalid = invalid;
-        this.files = files;
+    public GetDownloadableFilesResponse(boolean valid, ArrayList<String> filesList) {
+        this.valid = valid;
+        this.filesList = filesList;
     }
 
-    public GetDownloadableFilesResponse(boolean invalid, HashMap<String, Boolean> files) {
-        this.invalid = invalid;
-        this.files = files;
-    }
-
-    public GetDownloadableFilesResponse(boolean invalid) {
-        this.invalid = invalid;
+    public GetDownloadableFilesResponse(boolean valid) {
+        this.valid = valid;
     }
 
     public GetDownloadableFilesResponse() {
     }
 
-    public HashMap<String, Boolean> getFiles() {
-        return files;
+    public ArrayList<String> getFilesList() {
+        return filesList;
     }
 
-    public boolean isInvalid() {
-        return invalid;
+    public boolean isValid() {
+        return valid;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public String getToken() {
-        return token;
-    }
 
     @Override
     public void run(ResponseHandler responseHandler) throws IOException, ClassNotFoundException {

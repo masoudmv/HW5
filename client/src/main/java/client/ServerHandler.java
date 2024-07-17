@@ -10,6 +10,7 @@ import shared.request.Request;
 import shared.response.*;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -99,9 +100,30 @@ public class ServerHandler extends Thread implements ResponseHandler {
 
     @Override
     public void handleGetDownloadableFilesResponse(GetDownloadableFilesResponse getDownloadableFilesResponse) throws IOException, ClassNotFoundException {
-        if (!getDownloadableFilesResponse.isInvalid()) {
+        if (!getDownloadableFilesResponse.isValid()) {
             System.out.println("The request is not valid. Your token may have expired!");
         } else {
+
+
+
+
+
+
+
+
+            System.out.println("PRINTING FIELES");
+
+            ArrayList<String> files = getDownloadableFilesResponse.getFilesList();
+            for (String name : files) {
+                System.out.println(name);
+            }
+
+
+
+
+
+
+
             int PACKET_SIZE = 2048;
             int SERVER_PORT = 100;
             int CLIENT_PORT = 101;
@@ -112,8 +134,8 @@ public class ServerHandler extends Thread implements ResponseHandler {
             try {
                 socket = new DatagramSocket(CLIENT_PORT);
 
-                HashMap<String, Boolean> res = getDownloadableFilesResponse.getFiles();
-                res.forEach((key, value) -> System.out.println(key + "     Accessible: " + value));
+//                HashMap<String, Boolean> res = getDownloadableFilesResponse.getFiles();
+//                res.forEach((key, value) -> System.out.println(key + "     Accessible: " + value));
 
                 // Reading user input safely
                 Scanner scanner = new Scanner(System.in);
@@ -128,7 +150,7 @@ public class ServerHandler extends Thread implements ResponseHandler {
                 }
 
                 FileRequest fileRequest = new FileRequest(
-                        fileNameToRequest, getDownloadableFilesResponse.getUsername(), getDownloadableFilesResponse.getToken());
+                        fileNameToRequest, Main.getUserName(), Main.getToken());
                 sendFileRequest(fileRequest, serverAddress, socket, SERVER_PORT);
 
                 String path = "./client/DataBase/client" + Main.getNumClient() + "/";
@@ -157,16 +179,16 @@ public class ServerHandler extends Thread implements ResponseHandler {
                         System.out.println("File received and saved as " + fileReceiver.getFileName());
 
                         // Close the socket after receiving the file
-                        socket.close();
-                        break;
+//                        socket.close();
+//                        break;
                     }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
                 if (socket != null && !socket.isClosed()) {
-                    socket.close();
-                    System.out.println("Socket closed.");
+//                    socket.close();
+//                    System.out.println("Socket closed.");
                 }
             }
         }
@@ -204,7 +226,7 @@ public class ServerHandler extends Thread implements ResponseHandler {
 
             // Send files to the server
             for (File file : filesToSend) {
-                FileUplocdadManager uploadManager = new FileUploadManager(
+                FileUploadManager uploadManager = new FileUploadManager(
                         Main.getUserName(), Main.getToken(), serverAddress, socket, file, tcpUploadResponse.getPort());
                 uploadManager.start();
             }

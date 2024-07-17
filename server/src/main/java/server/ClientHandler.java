@@ -118,32 +118,29 @@ public class ClientHandler extends Thread implements RequestHandler {
         boolean isValid = JwtUtil.validateToken(token, username);
         if (!isValid) return new GetDownloadableFilesResponse(false);
 
+
         User user = findUser(username);
+//        assert user != null;
         if (user == null) return new GetDownloadableFilesResponse(false);
 
-        HashMap<String, Boolean> res = new HashMap<>();
-        List<String> accessables = user.getHasAccessTo();
-        List<User> users = DataBase.getUsers();
-        for (User u : users) {
-            ArrayList<String> files = u.getFileStrings();
-            for (String name : files) {
-                if (accessables.contains(name)) res.put(name, true);
-                else res.put(name, false);
-            }
-        }
+//        if (user == null) return new GetDownloadableFilesResponse(false);
+//        System.out.println("Sending uploaded Names response ...");
+        ArrayList<String> out = user.getFileStrings();
 
-        System.out.println("SENDING response ...");
+//        System.out.println("SENDING response ...");
 
         int port = 100;
         DatagramSocket socket = new DatagramSocket(port); // Open datagram socket on port 100
         byte[] buf = new byte[2048];
+        System.out.println("i am hereAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         DatagramPacket packet = new DatagramPacket(buf, buf.length);
         int numClient = getDownloadableFilesRequest.getNumClient();
 
         udpFileUploadHandler = new UdpFileUploadHandler(socket, packet, port, numClient);
         udpFileUploadHandler.start();
 
-        return new GetDownloadableFilesResponse(true);
+
+        return new GetDownloadableFilesResponse(true, out);
     }
 
     @Override
