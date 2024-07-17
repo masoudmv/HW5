@@ -30,8 +30,10 @@ public class ClientHandler extends Thread implements RequestHandler {
     private final DataBase dataBase;
     private UdpFileUploadHandler udpFileUploadHandler;
     private String username;
+    int port = 100;
+    DatagramSocket socket = new DatagramSocket(port); // Open datagram socket on port 100
 
-    public ClientHandler(SocketResponseSender socketResponseSender, DataBase dataBase) {
+    public ClientHandler(SocketResponseSender socketResponseSender, DataBase dataBase) throws SocketException {
         this.dataBase = dataBase;
         this.socketResponseSender = socketResponseSender;
     }
@@ -98,8 +100,8 @@ public class ClientHandler extends Thread implements RequestHandler {
         boolean isValid = JwtUtil.validateToken(token, username);
         if (!isValid) return new TCPUploadResponse(false);
 
-        int port = 100;
-        DatagramSocket socket = new DatagramSocket(port); // Open datagram socket on port 100
+//        int port = 100;
+//        DatagramSocket socket = new DatagramSocket(port); // Open datagram socket on port 100
         byte[] buf = new byte[2048];
         DatagramPacket packet = new DatagramPacket(buf, buf.length);
         int numClient = tcpUploadRequest.getNumClient();
@@ -129,10 +131,9 @@ public class ClientHandler extends Thread implements RequestHandler {
 
 //        System.out.println("SENDING response ...");
 
-        int port = 100;
-        DatagramSocket socket = new DatagramSocket(port); // Open datagram socket on port 100
+
         byte[] buf = new byte[2048];
-        System.out.println("i am hereAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+//        System.out.println("i am hereAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         DatagramPacket packet = new DatagramPacket(buf, buf.length);
         int numClient = getDownloadableFilesRequest.getNumClient();
 

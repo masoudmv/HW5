@@ -64,9 +64,11 @@ public class CLI {
             case 2:
                 socketRequestSender.sendRequest(
                         new GetUploadedFilesRequest(Main.getToken(), Main.getUserName())).run(serverHandler);
+                showAuthenticatedOptions();
                 break;
             case 3:
                 chooseFileForDownload();
+                showAuthenticatedOptions();
                 break;
             case 4:
                 accessRequest();

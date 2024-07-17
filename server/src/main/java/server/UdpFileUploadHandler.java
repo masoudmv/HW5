@@ -49,8 +49,8 @@ public class UdpFileUploadHandler extends Thread {
                 ex.printStackTrace();
             }
         } finally {
-            socket.close();
-            System.out.println("Socket closed.");
+//            socket.close();
+//            System.out.println("Socket closed.");
         }
     }
 
@@ -85,11 +85,34 @@ public class UdpFileUploadHandler extends Thread {
 
     private static void handleFileRequest(FileRequest fileRequest, DatagramSocket socket, InetAddress clientAddress) throws IOException {
 
-        File file = new File(fileRequest.getFileName());
-        if (!file.exists()) {
-            System.err.println("File not found: " + file.getAbsolutePath());
+        String fileName = fileRequest.getFileName();
+        String username = fileRequest.getUsername();
+
+        User user = findUser(username);
+
+        if (user == null) return;
+
+        if (!user.getFileStrings().contains(fileName)) {
+            System.err.println("File not found: " + fileName);
             return;
         }
+
+        File file = null;
+        for (int i = 0; i < user.getFileStrings().size(); i++) {
+            if (user.getFileStrings().get(i).equals(fileName)) {
+                file = user.getFiles().get(i);
+            }
+        }
+
+        if (file == null) return;
+
+
+
+//        File file = new File(fileRequest.getFileName());
+//        if (!file.exists()) {
+//            System.err.println("File not found: " + file.getAbsolutePath());
+//            return;
+//        }
 
         String uniqueID = UUID.randomUUID().toString();
         FileInputStream fis = new FileInputStream(file);
